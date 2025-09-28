@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">My Media</string>
+    <string name="title_my_media">Media</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_hide">Hide</string>
+    <string name="button_show">Show</string>
+    <string name="fab_add_group">Group</string>
+    <string name="hint_group_name">Name</string>
+    <string name="title_group_add">Add Group</string>
+</resources>
