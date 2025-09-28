@@ -5,6 +5,7 @@ import io.smileyjoe.media.ui.base.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class MainActivityViewModel : ViewModel<MainActivityUiState>(MainActivityUiState()) {
 
@@ -13,5 +14,17 @@ class MainActivityViewModel : ViewModel<MainActivityUiState>(MainActivityUiState
 
     fun addGroup(group: Group) {
         _groups.value = _groups.value + group
+    }
+
+    fun showDialogGroupAdd(show: Boolean) {
+        _uiState.update {
+            it.copy(isDialogAddGroupShowing = show)
+        }
+    }
+
+    fun expandFabAddGroup(expand: Boolean) {
+        _uiState.update {
+            it.copy(isFabAddExpanded = expand)
+        }
     }
 }

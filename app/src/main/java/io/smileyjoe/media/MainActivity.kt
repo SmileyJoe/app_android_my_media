@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Screen() {
         val viewModel: MainActivityViewModel = viewModel()
-        val dialogGroupAdd = DialogGroupAdd.create()
+        val uiState by viewModel.uiState.collectAsState()
         val padding = Dimens.padding
         val groups by viewModel.groups.collectAsState()
         Box(
@@ -73,19 +73,36 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            dialogGroupAdd.Compose(
-                onSave = { viewModel.addGroup(it) }
-            )
+
+            if (uiState.isDialogAddGroupShowing) {
+                DialogGroupAdd(
+                    onSave = { group ->
+                        viewModel.apply {
+                            addGroup(group)
+                            showDialogGroupAdd(false)
+                        }
+                    },
+                    onCancel = {
+                        viewModel.showDialogGroupAdd(false)
+                    }
+                )
+            }
+
             FabAddMedia(
+                isExpanded = uiState.isFabAddExpanded,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = padding.medium),
                 onClickOption = {
+                    viewModel.expandFabAddGroup(false)
                     when (it) {
                         FabAddMediaOption.GROUP -> {
-                            dialogGroupAdd.show()
+                            viewModel.showDialogGroupAdd(true)
                         }
                     }
+                },
+                onStateChanged = {
+                    viewModel.expandFabAddGroup(it)
                 }
             )
         }
@@ -119,7 +136,8 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     private fun ScreenPreview() {
-        FabAddMedia.controller().expand()
+        val viewModel: MainActivityViewModel = viewModel()
+        viewModel.expandFabAddGroup(true)
         Screen()
     }
 }
