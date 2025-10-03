@@ -1,4 +1,4 @@
-package io.smileyjoe.media.ui.component.dialog
+package io.smileyjoe.media.ui.component.dialog.group_add
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

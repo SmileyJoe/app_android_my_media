@@ -1,5 +1,7 @@
-package io.smileyjoe.media
+package io.smileyjoe.media.ui.activities.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,13 +32,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.smileyjoe.media.ui.component.dialog.DialogGroupAdd
+import io.smileyjoe.media.R
+import io.smileyjoe.media.ui.component.dialog.group_add.DialogGroupAdd
 import io.smileyjoe.media.ui.component.fab.FabAddMedia
 import io.smileyjoe.media.ui.component.fab.FabAddMediaOption
 import io.smileyjoe.media.ui.theme.Dimens
 import io.smileyjoe.media.ui.theme.MyMediaTheme
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        fun getIntent(context: Context) =
+            Intent(context, MainActivity::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

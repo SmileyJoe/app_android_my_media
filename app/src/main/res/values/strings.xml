@@ -3,9 +3,22 @@
     <string name="title_my_media">Media</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_ok">OK</string>
     <string name="button_hide">Hide</string>
     <string name="button_show">Show</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_no">No</string>
+    <string name="button_load_file">Load File</string>
+    <string name="button_create_file">Create File</string>
     <string name="fab_add_group">Group</string>
     <string name="hint_group_name">Name</string>
     <string name="title_group_add">Add Group</string>
+    <string name="instruction_choose_file">So you can own your data, this app saves everything in a JSON file that you choose. This way you can back it up, or do whatever you want with it. \n\nIf you already have a previous file you would like to use, please load it, else, create a new file.</string>
+    <string name="error_file_not_found">File not found</string>
+    <string name="error_file_not_found_saved">The original config file could not be found, it may have been moved or deleted. \n\nPlease select it again, or create a new one.</string>
+    <string name="error_file_not_writeable">File not writeable</string>
+    <string name="dialog_title_error">Error</string>
+    <string name="dialog_title_confirm">Confirm</string>
+    <string name="error_generic">An Unknown error occurred</string>
 </resources>

@@ -1,4 +1,4 @@
-package io.smileyjoe.media
+package io.smileyjoe.media.ui.activities.main
 
 import io.smileyjoe.media.ui.base.UIState
 

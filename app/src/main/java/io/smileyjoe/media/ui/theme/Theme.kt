@@ -17,8 +17,9 @@ fun MyMediaTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val isDarkTheme = isSystemInDarkTheme()
     val colorScheme =
-        if (isSystemInDarkTheme()) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
+        if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
             context
         )
     val view = LocalView.current
@@ -26,7 +27,8 @@ fun MyMediaTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+                !isDarkTheme
         }
     }
 

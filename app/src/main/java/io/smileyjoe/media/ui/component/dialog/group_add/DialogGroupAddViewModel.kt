@@ -1,4 +1,4 @@
-package io.smileyjoe.media.ui.component.dialog
+package io.smileyjoe.media.ui.component.dialog.group_add
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
