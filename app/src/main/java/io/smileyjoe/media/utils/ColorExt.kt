@@ -12,6 +12,13 @@ fun Color.saturation(percent: Float): Int =
         percent = percent
     )
 
+@ColorInt
+fun Color.lightness(percent: Float): Int =
+    edit(
+        position = 2,
+        percent = percent
+    )
+
 private fun Color.edit(position: Int, percent: Float) =
     ColorUtils.HSLToColor(with(FloatArray(3)) {
         ColorUtils.colorToHSL(toArgb(), this)

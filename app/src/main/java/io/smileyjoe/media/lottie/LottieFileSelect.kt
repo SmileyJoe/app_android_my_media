@@ -7,8 +7,9 @@ import io.smileyjoe.media.ui.component.lottie.LottieFile
 import io.smileyjoe.media.ui.component.lottie.LottieStyle
 import io.smileyjoe.media.utils.saturation
 
-class LottieFileSelect(val color: Color, val colorBackground: Color) : LottieFile(
+class LottieFileSelect(color: Color, colorBackground: Color) : LottieFile(
     image = R.raw.file_select,
+    aspectRatio = 300/300f,
     styles = listOf(
         LottieStyle(
             color = colorBackground.toArgb(),

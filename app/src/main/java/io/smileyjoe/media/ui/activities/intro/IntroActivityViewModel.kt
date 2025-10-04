@@ -11,10 +11,10 @@ import io.smileyjoe.media.R
 import io.smileyjoe.media.db.dataStore
 import io.smileyjoe.media.models.Config
 import io.smileyjoe.media.models.FileInfo
+import io.smileyjoe.media.models.Group
 import io.smileyjoe.media.ui.base.AndroidViewModelUIState
 import io.smileyjoe.media.utils.info
 import io.smileyjoe.media.utils.write
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class IntroActivityViewModel(application: Application) :
@@ -44,21 +44,31 @@ class IntroActivityViewModel(application: Application) :
                         }
                     }
 
-                    _uiState.update {
+                    updateUi {
                         it.copy(
                             showLoading = false,
                             showConfirmFile = false,
+                            showChooseFile = true,
                             showError = errorMessage.value != null,
                             isFileSaved = success
                         )
                     }
 
+                } else {
+                    updateUi {
+                        it.copy(
+                            showLoading = false,
+                            showConfirmFile = false,
+                            showChooseFile = true,
+                            showError = false
+                        )
+                    }
                 }
             }
         }
 
-        _uiState.update {
-            it.copy(showChooseFile = true)
+        updateUi {
+            it.copy(showLoading = true)
         }
     }
 
@@ -78,10 +88,18 @@ class IntroActivityViewModel(application: Application) :
         handleFile(uri)
 
     fun fileCreated(uri: Uri?) =
-        handleFile(uri, Config())
+        handleFile(
+            uri, Config(
+                groups = mutableListOf(
+                    Group(
+                        name = application.getString(R.string.group_name_services)
+                    )
+                )
+            )
+        )
 
     private fun handleFile(uri: Uri?, config: Config? = null) {
-        _uiState.update {
+        updateUi {
             it.copy(showLoading = true)
         }
         selectedUri = uri
@@ -103,7 +121,7 @@ class IntroActivityViewModel(application: Application) :
             } ?: R.string.error_file_not_found
 
             val hasFile = this@IntroActivityViewModel.fileInfo.value != null
-            _uiState.update {
+            updateUi {
                 it.copy(
                     showChooseFile = true,
                     showConfirmFile = hasFile,
@@ -115,7 +133,7 @@ class IntroActivityViewModel(application: Application) :
     }
 
     fun hideError() {
-        _uiState.update {
+        updateUi {
             it.copy(
                 showError = false
             )
@@ -123,8 +141,17 @@ class IntroActivityViewModel(application: Application) :
         errorMessage.value = null
     }
 
+    fun hideLoading() {
+        updateUi {
+            it.copy(
+                showLoading = false
+            )
+        }
+        errorMessage.value = null
+    }
+
     fun hideConfirmFile() {
-        _uiState.update {
+        updateUi {
             it.copy(
                 showConfirmFile = false
             )

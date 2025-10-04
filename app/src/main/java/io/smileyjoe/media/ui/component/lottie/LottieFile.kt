@@ -8,6 +8,7 @@ import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 
 open class LottieFile(
     @RawRes val image: Int,
+    val aspectRatio: Float,
     val styles: List<LottieStyle>
 ) {
 

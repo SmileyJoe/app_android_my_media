@@ -33,9 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.smileyjoe.media.R
 import io.smileyjoe.media.lottie.LottieFileSelect
+import io.smileyjoe.media.lottie.LottieLoading
 import io.smileyjoe.media.ui.activities.main.MainActivity
 import io.smileyjoe.media.ui.component.dialog.confirm.DialogConfirm
 import io.smileyjoe.media.ui.component.dialog.error.DialogError
+import io.smileyjoe.media.ui.component.dialog.loading.DialogLoading
 import io.smileyjoe.media.ui.component.lottie.LottieImage
 import io.smileyjoe.media.ui.theme.Dimens
 import io.smileyjoe.media.ui.theme.MyMediaTheme
@@ -97,6 +99,12 @@ class IntroActivity : ComponentActivity() {
                     )
                 }
 
+                if (uiState.showLoading) {
+                    DialogLoading(
+                        onDismiss = { viewModel.hideLoading() }
+                    )
+                }
+
                 if (uiState.showConfirmFile) {
                     DialogConfirm(
                         onDismiss = {
@@ -128,6 +136,7 @@ class IntroActivity : ComponentActivity() {
                 ),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+                    .padding(start = padding.extraLarge, end = padding.extraLarge)
             )
             Text(
                 text = stringResource(R.string.instruction_choose_file),

@@ -21,4 +21,7 @@
     <string name="dialog_title_error">Error</string>
     <string name="dialog_title_confirm">Confirm</string>
     <string name="error_generic">An Unknown error occurred</string>
+    <string name="group_name_services">Services</string>
+    <string name="dialog_message_loading">Loading</string>
+    <string name="dialog_message_saving">Saving</string>
 </resources>
