@@ -9,7 +9,7 @@ import io.smileyjoe.media.utils.lightness
 
 class LottieLoading(color: Color) : LottieFile(
     image = R.raw.loading,
-    aspectRatio = 800/600f,
+    aspectRatio = 800 / 600f,
     styles = listOf(
         LottieStyle(
             color = color.lightness(30f),

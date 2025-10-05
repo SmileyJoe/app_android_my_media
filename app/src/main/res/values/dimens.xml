@@ -12,4 +12,6 @@
     <dimen name="icon_medium">24dp</dimen>
     <dimen name="icon_large">48dp</dimen>
     <dimen name="icon_x_large">64dp</dimen>
+
+    <dimen name="lottie_full_width_max">200dp</dimen>
 </resources>

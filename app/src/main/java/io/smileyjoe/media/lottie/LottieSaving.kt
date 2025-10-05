@@ -8,7 +8,7 @@ import io.smileyjoe.media.ui.component.lottie.LottieStyle
 
 class LottieSaving(color: Color) : LottieFile(
     image = R.raw.saving,
-    aspectRatio = 900/900f,
+    aspectRatio = 900 / 900f,
     styles = listOf(
         LottieStyle(
             color = color.toArgb(),

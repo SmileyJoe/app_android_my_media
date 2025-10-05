@@ -109,7 +109,7 @@ class IntroActivityViewModel(application: Application) :
             errorMessage.value = uri?.info(application)?.let { fileInfo ->
                 // todo: Verify file contents
                 val success = config?.let {
-                    uri.write(application, Config().toJson())
+                    uri.write(application, it.toJson())
                 } ?: true
 
                 if (success) {
