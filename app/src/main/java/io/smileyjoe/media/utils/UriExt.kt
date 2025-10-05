@@ -8,6 +8,23 @@ import android.provider.OpenableColumns
 import io.smileyjoe.media.models.FileInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
+suspend fun Uri.read(context: Context): String =
+    withContext(Dispatchers.IO) {
+        val stringBuilder = StringBuilder()
+        context.contentResolver.openInputStream(this@read)?.use { inputStream ->
+            BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                var line: String? = reader.readLine()
+                while (line != null) {
+                    stringBuilder.append(line)
+                    line = reader.readLine()
+                }
+            }
+        }
+        stringBuilder.toString()
+    }
 
 suspend fun Uri.write(context: Context, contents: String): Boolean =
     withContext(Dispatchers.IO) {

@@ -33,7 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.smileyjoe.media.R
+import io.smileyjoe.media.ui.component.dialog.error.DialogError
 import io.smileyjoe.media.ui.component.dialog.group_add.DialogGroupAdd
+import io.smileyjoe.media.ui.component.dialog.loading.DialogLoading
 import io.smileyjoe.media.ui.component.fab.FabAddMedia
 import io.smileyjoe.media.ui.component.fab.FabAddMediaOption
 import io.smileyjoe.media.ui.theme.Dimens
@@ -68,6 +70,7 @@ class MainActivity : ComponentActivity() {
         val uiState by viewModel.uiState.collectAsState()
         val padding = Dimens.padding
         val groups by viewModel.groups.collectAsState()
+        val errorMessage by viewModel.errorMessage
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,6 +83,19 @@ class MainActivity : ComponentActivity() {
                         Text(text = group.name)
                     }
                 }
+            }
+
+            if(uiState.isLoading) {
+                DialogLoading(
+                    onDismiss = { viewModel.hideLoading() }
+                )
+            }
+
+            if(uiState.isErrorShowing) {
+                DialogError(
+                    onDismiss = { viewModel.hideError() },
+                    messageResId = errorMessage
+                )
             }
 
             if (uiState.isDialogAddGroupShowing) {

@@ -4,5 +4,7 @@ import io.smileyjoe.media.ui.base.UIState
 
 data class MainActivityUiState(
     val isDialogAddGroupShowing: Boolean = false,
-    val isFabAddExpanded: Boolean = false
+    val isFabAddExpanded: Boolean = false,
+    val isErrorShowing: Boolean = false,
+    val isLoading: Boolean = false
 ) : UIState

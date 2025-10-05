@@ -146,7 +146,6 @@ class IntroActivityViewModel(application: Application) :
                 showLoading = false
             )
         }
-        errorMessage.value = null
     }
 
     fun hideConfirmFile() {

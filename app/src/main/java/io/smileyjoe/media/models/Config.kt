@@ -9,6 +9,12 @@ data class Config(
     @SerialName("groups")
     val groups: MutableList<Group> = mutableListOf()
 ) {
+
+    companion object {
+        fun fromJson(json: String) =
+            Json.decodeFromString<Config>(json)
+    }
+
     fun toJson() =
         Json.encodeToString(this)
 }
