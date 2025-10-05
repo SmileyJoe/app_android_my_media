@@ -1,16 +1,14 @@
 package io.smileyjoe.media.ui.component.dialog.loading
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import io.smileyjoe.media.lottie.LottieLoading
-import io.smileyjoe.media.ui.component.lottie.LottieImage
 import io.smileyjoe.media.ui.theme.Dimens
 
 @Preview
@@ -21,6 +19,7 @@ fun DialogLoadingPreview() {
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DialogLoading(
     onDismiss: () -> Unit
@@ -32,21 +31,17 @@ fun DialogLoading(
             onDismiss()
         }
     ) {
-        Card(
-            Modifier
-                .fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = padding.medium,
-                        bottom = padding.medium
-                    )
-            ) {
-                LottieImage(
-                    image = LottieLoading(MaterialTheme.colorScheme.primary)
+        val iconSize = Dimens.icon
+        Column(
+            modifier = Modifier
+                .padding(
+                    top = padding.medium,
+                    bottom = padding.medium
                 )
-            }
+        ) {
+            LoadingIndicator(
+                modifier = Modifier.size(iconSize.extraLarge)
+            )
         }
     }
 }

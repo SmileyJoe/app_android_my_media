@@ -38,7 +38,7 @@ fun DialogError(
             Icon(
                 imageVector = Icons.Filled.Warning,
                 contentDescription = "Error",
-                modifier = Modifier.size(iconSize.extraLarge)
+                modifier = Modifier.size(iconSize.large)
             )
         },
         title = {
