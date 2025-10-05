@@ -3,6 +3,7 @@ package io.smileyjoe.media.ui.activities.intro
 import io.smileyjoe.media.ui.base.UIState
 
 data class IntroActivityUIState(
+    val showSplash: Boolean = true,
     val showConfirmFile: Boolean = false,
     val showChooseFile: Boolean = false,
     val showError: Boolean = false,

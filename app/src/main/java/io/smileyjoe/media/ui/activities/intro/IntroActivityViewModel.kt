@@ -15,6 +15,7 @@ import io.smileyjoe.media.models.Group
 import io.smileyjoe.media.ui.base.AndroidViewModelUIState
 import io.smileyjoe.media.utils.info
 import io.smileyjoe.media.utils.write
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class IntroActivityViewModel(application: Application) :
@@ -46,6 +47,7 @@ class IntroActivityViewModel(application: Application) :
 
                     updateUi {
                         it.copy(
+                            showSplash = false,
                             showLoading = false,
                             showConfirmFile = false,
                             showChooseFile = true,
@@ -57,6 +59,7 @@ class IntroActivityViewModel(application: Application) :
                 } else {
                     updateUi {
                         it.copy(
+                            showSplash = false,
                             showLoading = false,
                             showConfirmFile = false,
                             showChooseFile = true,
@@ -65,10 +68,6 @@ class IntroActivityViewModel(application: Application) :
                     }
                 }
             }
-        }
-
-        updateUi {
-            it.copy(showLoading = true)
         }
     }
 
