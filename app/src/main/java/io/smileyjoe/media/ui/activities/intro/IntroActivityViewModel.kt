@@ -55,20 +55,20 @@ class IntroActivityViewModel(application: Application) :
                     }
 
                 } else {
-//                    updateUi {
-//                        it.copy(
-//                            showLoading = false,
-//                            showConfirmFile = false,
-//                            showChooseFile = true,
-//                            showError = false
-//                        )
-//                    }
+                    updateUi {
+                        it.copy(
+                            showLoading = false,
+                            showConfirmFile = false,
+                            showChooseFile = true,
+                            showError = false
+                        )
+                    }
                 }
             }
         }
 
         updateUi {
-            it.copy(showLoading = true, showChooseFile = true)
+            it.copy(showLoading = true)
         }
     }
 
