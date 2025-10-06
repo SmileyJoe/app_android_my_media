@@ -3,8 +3,8 @@ package io.smileyjoe.media.ui.activities.main
 import io.smileyjoe.media.ui.base.UIState
 
 data class MainActivityUiState(
-    val isDialogAddGroupShowing: Boolean = false,
-    val isFabAddExpanded: Boolean = false,
-    val isErrorShowing: Boolean = false,
-    val isLoading: Boolean = false
+    val showDialogAddGroup: Boolean = false,
+    val expandFabAdd: Boolean = false,
+    val showError: Boolean = false,
+    val showLoading: Boolean = false
 ) : UIState

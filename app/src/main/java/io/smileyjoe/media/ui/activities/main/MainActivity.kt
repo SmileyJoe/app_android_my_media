@@ -85,20 +85,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if(uiState.isLoading) {
+            if (uiState.showLoading) {
                 DialogLoading(
-                    onDismiss = { viewModel.hideLoading() }
+                    onDismiss = { viewModel.showLoading(false) }
                 )
             }
 
-            if(uiState.isErrorShowing) {
+            if (uiState.showError) {
                 DialogError(
-                    onDismiss = { viewModel.hideError() },
+                    onDismiss = { viewModel.showError(false) },
                     messageResId = errorMessage
                 )
             }
 
-            if (uiState.isDialogAddGroupShowing) {
+            if (uiState.showDialogAddGroup) {
                 DialogGroupAdd(
                     onSave = { group ->
                         viewModel.apply {
@@ -113,7 +113,7 @@ class MainActivity : ComponentActivity() {
             }
 
             FabAddMedia(
-                isExpanded = uiState.isFabAddExpanded,
+                isExpanded = uiState.expandFabAdd,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = padding.medium),

@@ -2,6 +2,7 @@ package io.smileyjoe.media.ui.activities.main
 
 import android.app.Application
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.application
@@ -37,27 +38,17 @@ class MainActivityViewModel(application: Application) :
             uri?.read(application)?.let {
                 config = Config.fromJson(it)
                 _groups.value = config.groups
-                updateUi {
-                    it.copy(isLoading = false)
-                }
+                showLoading(false)
             } ?: run {
-                errorMessage.value = R.string.error_file_not_found
-
-                updateUi {
-                    it.copy(isLoading = false, isErrorShowing = true)
-                }
+                showError(true, R.string.error_file_not_found)
             }
         }
 
-        updateUi {
-            it.copy(isLoading = true)
-        }
+        showLoading(true)
     }
 
     fun addGroup(group: Group) {
-        updateUi {
-            it.copy(isLoading = true)
-        }
+        showLoading(true)
 
         viewModelScope.launch {
             config.groups.add(group)
@@ -65,44 +56,39 @@ class MainActivityViewModel(application: Application) :
 
             if (success) {
                 _groups.value = _groups.value + group
-                updateUi {
-                    it.copy(isLoading = false)
-                }
+                showLoading(false)
             } else {
-                updateUi {
-                    errorMessage.value = R.string.error_file_not_found
-                    it.copy(isErrorShowing = false)
-                }
+                showError(true, R.string.error_file_not_found)
             }
         }
     }
 
-    fun hideError() {
+    fun showError(show: Boolean, @StringRes message: Int? = null) {
         updateUi {
             it.copy(
-                isErrorShowing = false
+                showError = show,
+                showLoading = false
             )
         }
-        errorMessage.value = null
+
+        errorMessage.value = message
     }
 
-    fun hideLoading() {
+    fun showLoading(show: Boolean) {
         updateUi {
-            it.copy(
-                isLoading = false
-            )
+            it.copy(showLoading = show)
         }
     }
 
     fun showDialogGroupAdd(show: Boolean) {
         updateUi {
-            it.copy(isDialogAddGroupShowing = show)
+            it.copy(showDialogAddGroup = show)
         }
     }
 
     fun expandFabAddGroup(expand: Boolean) {
         updateUi {
-            it.copy(isFabAddExpanded = expand)
+            it.copy(expandFabAdd = expand)
         }
     }
 }
