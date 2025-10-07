@@ -1,7 +1,12 @@
 package io.smileyjoe.media.ui.component.fab
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -21,45 +26,58 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import io.smileyjoe.media.ui.theme.Dimens
+import io.smileyjoe.media.utils.isScrollingUp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FabAddMedia(
     isExpanded: Boolean,
     modifier: Modifier,
+    listState: LazyListState,
     onClickOption: (option: FabAddMediaOption) -> Unit,
     onStateChanged: (expanded: Boolean) -> Unit
 ) {
-    FloatingActionButtonMenu(
-        expanded = isExpanded,
-        button = {
-            ToggleFloatingActionButton(
-                checked = isExpanded,
-                onCheckedChange = {
-                    Log.d("CheckThings", "Changed: $it")
-                    onStateChanged(it)
-                }
-            ) {
-                val icon by remember {
-                    derivedStateOf {
-                        if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
-                    }
-                }
-                Icon(
-                    painter = rememberVectorPainter(icon),
-                    contentDescription = null,
-                    modifier = Modifier.animateIcon({ checkedProgress }),
-                )
+    val isVisible = listState.isScrollingUp()
 
-            }
-        },
-        modifier = modifier
+    // if its expanded, and the list is scrolled, contract it //
+    if (!isVisible && isExpanded) {
+        onStateChanged(false)
+    }
+    AnimatedVisibility(
+        visible = isVisible,
+        modifier = modifier,
+        enter = scaleIn() + fadeIn(),
+        exit = scaleOut() + fadeOut()
     ) {
-        FabAddMediaOption.entries.forEach {
-            FabAddOption(
-                option = it,
-                onClick = onClickOption
-            )
+        FloatingActionButtonMenu(
+            expanded = isExpanded,
+            button = {
+                ToggleFloatingActionButton(
+                    checked = isExpanded,
+                    onCheckedChange = {
+                        onStateChanged(it)
+                    }
+                ) {
+                    val icon by remember {
+                        derivedStateOf {
+                            if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
+                        }
+                    }
+                    Icon(
+                        painter = rememberVectorPainter(icon),
+                        contentDescription = null,
+                        modifier = Modifier.animateIcon({ checkedProgress }),
+                    )
+
+                }
+            }
+        ) {
+            FabAddMediaOption.entries.forEach {
+                FabAddOption(
+                    option = it,
+                    onClick = onClickOption
+                )
+            }
         }
     }
 }

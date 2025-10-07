@@ -6,15 +6,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +42,7 @@ import io.smileyjoe.media.ui.component.dialog.group_add.DialogGroupAdd
 import io.smileyjoe.media.ui.component.dialog.loading.DialogLoading
 import io.smileyjoe.media.ui.component.fab.FabAddMedia
 import io.smileyjoe.media.ui.component.fab.FabAddMediaOption
+import io.smileyjoe.media.ui.component.group.listitem.GroupListItem
 import io.smileyjoe.media.ui.theme.Dimens
 import io.smileyjoe.media.ui.theme.MyMediaTheme
 
@@ -71,6 +76,7 @@ class MainActivity : ComponentActivity() {
         val padding = Dimens.padding
         val groups by viewModel.groups.collectAsState()
         val errorMessage by viewModel.errorMessage
+        val listState = rememberLazyListState()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,9 +84,23 @@ class MainActivity : ComponentActivity() {
         ) {
             Column {
                 TopAppBar()
-                LazyColumn {
+                LazyColumn(
+                    contentPadding = PaddingValues(
+                        start = padding.medium,
+                        end = padding.medium,
+                        bottom = padding.large
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(padding.medium),
+                    state = listState
+                ) {
                     items(groups) { group ->
-                        Text(text = group.name)
+                        GroupListItem(
+                            group = group,
+                            modifier = Modifier.fillMaxWidth(),
+                            onNewClick = { group ->
+                                // todo: Show new item dialog
+                            }
+                        )
                     }
                 }
             }
@@ -117,6 +137,7 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = padding.medium),
+                listState = listState,
                 onClickOption = {
                     viewModel.expandFabAddGroup(false)
                     when (it) {

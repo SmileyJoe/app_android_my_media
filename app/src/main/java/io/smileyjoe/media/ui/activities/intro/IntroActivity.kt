@@ -67,7 +67,7 @@ class IntroActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        splashScreen.setKeepOnScreenCondition{ viewModel.uiState.value.showSplash }
+        splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.showSplash }
         setContent {
             MyMediaTheme {
                 Surface(

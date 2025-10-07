@@ -15,7 +15,6 @@ import io.smileyjoe.media.models.Group
 import io.smileyjoe.media.ui.base.AndroidViewModelUIState
 import io.smileyjoe.media.utils.info
 import io.smileyjoe.media.utils.write
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class IntroActivityViewModel(application: Application) :
