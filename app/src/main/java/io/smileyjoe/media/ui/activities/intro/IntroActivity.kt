@@ -5,8 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
-import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,16 +50,10 @@ import io.smileyjoe.media.ui.theme.MyMediaTheme
 
 class IntroActivity : ComponentActivity() {
 
-    val mimeType = "application/json"
-    val fileNameDefault = "my_media.json"
     val viewModel: IntroActivityViewModel by viewModels()
 
-    val createFile = registerForActivityResult(CreateDocument(mimeType)) {
-        viewModel.fileCreated(it)
-    }
-
-    val openFile = registerForActivityResult(OpenDocument()) {
-        viewModel.fileLoaded(it)
+    val openFile = registerForActivityResult(OpenDocumentTree()) {
+        viewModel.directorySelected(it)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,10 +90,10 @@ class IntroActivity : ComponentActivity() {
                 startActivity(MainActivity.getIntent(baseContext))
                 finish()
             } else {
-                if (uiState.showChooseFile) {
+                if (uiState.showChooseDirectory) {
                     when (LocalConfiguration.current.orientation) {
-                        Configuration.ORIENTATION_LANDSCAPE -> ChooseFileLandscape()
-                        else -> ChooseFilePortrait()
+                        Configuration.ORIENTATION_LANDSCAPE -> ChooseDirectoryLandscape()
+                        else -> ChooseDirectoryPortrait()
                     }
                 }
 
@@ -117,14 +110,14 @@ class IntroActivity : ComponentActivity() {
                     )
                 }
 
-                if (uiState.showConfirmFile) {
+                if (uiState.showConfirmDirectory) {
                     DialogConfirm(
                         onDismiss = {
-                            viewModel.hideConfirmFile()
+                            viewModel.hideConfirmDirectory()
                         },
                         message = fileInfo?.name,
                         onPositive = {
-                            viewModel.saveFile()
+                            viewModel.directoryConfirmed()
                         }
                     )
                 }
@@ -133,7 +126,7 @@ class IntroActivity : ComponentActivity() {
     }
 
     @Composable
-    fun BoxScope.ChooseFilePortrait() {
+    fun BoxScope.ChooseDirectoryPortrait() {
         val padding = Dimens.padding
         Column(
             modifier = Modifier
@@ -155,12 +148,12 @@ class IntroActivity : ComponentActivity() {
                     .align(Alignment.CenterHorizontally)
                     .widthIn(0.dp, dimensionResource(R.dimen.lottie_full_width_max))
             )
-            ChooseFileContent()
+            ChooseDirectoryContent()
         }
     }
 
     @Composable
-    fun BoxScope.ChooseFileLandscape() {
+    fun BoxScope.ChooseDirectoryLandscape() {
         val padding = Dimens.padding
         Row(
             modifier = Modifier
@@ -193,13 +186,13 @@ class IntroActivity : ComponentActivity() {
                     ),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                ChooseFileContent()
+                ChooseDirectoryContent()
             }
         }
     }
 
     @Composable
-    fun ChooseFileContent() {
+    fun ChooseDirectoryContent() {
         val padding = Dimens.padding
 
         Text(
@@ -212,23 +205,13 @@ class IntroActivity : ComponentActivity() {
         ) {
             Button(
                 onClick = {
-                    createFile.launch(fileNameDefault)
-                },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Text(stringResource(R.string.button_create_file))
-            }
-
-            Button(
-                onClick = {
-                    openFile.launch(arrayOf(mimeType))
+                    openFile.launch(null)
                 },
                 modifier = Modifier
                     .padding(top = padding.medium)
                     .align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(R.string.button_load_file))
+                Text(stringResource(R.string.button_open_directory))
             }
         }
     }

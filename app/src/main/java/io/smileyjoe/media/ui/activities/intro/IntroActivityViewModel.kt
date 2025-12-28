@@ -8,20 +8,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import io.smileyjoe.media.R
+import io.smileyjoe.media.db.ConfigDirectory
 import io.smileyjoe.media.db.dataStore
+import io.smileyjoe.media.exception.FileNotWriteableException
 import io.smileyjoe.media.models.Config
 import io.smileyjoe.media.models.FileInfo
-import io.smileyjoe.media.models.Group
 import io.smileyjoe.media.ui.base.AndroidViewModelUIState
+import io.smileyjoe.media.utils.asDirectory
+import io.smileyjoe.media.utils.createIfNotExists
 import io.smileyjoe.media.utils.info
 import io.smileyjoe.media.utils.write
 import kotlinx.coroutines.launch
+import okio.FileNotFoundException
 
-class IntroActivityViewModel(application: Application) :
-    AndroidViewModelUIState<IntroActivityUIState>(
-        application,
-        IntroActivityUIState()
-    ) {
+class IntroActivityViewModel(
+    application: Application
+) : AndroidViewModelUIState<IntroActivityUIState>(
+    application = application,
+    uiState = IntroActivityUIState()
+) {
 
     var fileInfo: MutableState<FileInfo?> = mutableStateOf(null)
     var errorMessage: MutableState<Int?> = mutableStateOf(null)
@@ -29,129 +34,120 @@ class IntroActivityViewModel(application: Application) :
 
     init {
         viewModelScope.launch {
-            application.dataStore.getConfigUri().collect {
-                if (it != null) {
-                    errorMessage.value = null
-                    var success = true
+            ConfigDirectory.get(application)?.let { dir ->
+                if (!dir.isValid) {
+                    saveDirectory(null)
+                    errorMessage.value = R.string.error_file_not_found_saved
+                }
 
-                    if (fileInfo.value == null) {
-                        // todo: Verify file contents
-                        success = it.info(application) != null
-
-                        if (!success) {
-                            saveFile(null)
-                            errorMessage.value = R.string.error_file_not_found_saved
-                        }
-                    }
-
-                    updateUi {
-                        it.copy(
-                            showSplash = false,
-                            showLoading = false,
-                            showConfirmFile = false,
-                            showChooseFile = true,
-                            showError = errorMessage.value != null,
-                            isFileSaved = success
-                        )
-                    }
-
-                } else {
-                    updateUi {
-                        it.copy(
-                            showSplash = false,
-                            showLoading = false,
-                            showConfirmFile = false,
-                            showChooseFile = true,
-                            showError = false
-                        )
-                    }
+                updateUi { ui ->
+                    ui.directoryLoaded(
+                        showError = errorMessage.value != null,
+                        isFileSaved = dir.isValid
+                    )
+                }
+            } ?: run {
+                updateUi { ui ->
+                    ui.initial()
                 }
             }
         }
     }
 
-    fun saveFile(uri: Uri? = selectedUri) {
+    fun directorySelected(uri: Uri?) {
+        updateUi {
+            it.showLoading()
+        }
+
+        selectedUri = uri
+        errorMessage.value = null
+
+        viewModelScope.launch {
+            uri?.asDirectory(application)?.info()?.let {
+                fileInfo.value = it
+            }
+
+            updateUi {
+                it.directoryUpdated(
+                    hasDirectory = this@IntroActivityViewModel.fileInfo.value != null
+                )
+            }
+        }
+    }
+
+    fun directoryConfirmed() {
+        updateUi {
+            it.showLoading()
+        }
+
+        viewModelScope.launch {
+            val created = createData()
+
+            if (created) {
+                saveDirectory()
+            }
+
+            val configDir = ConfigDirectory.get(application)
+            updateUi { ui ->
+                ui.directoryLoaded(
+                    showError = errorMessage.value != null,
+                    isFileSaved = configDir?.isValid == true
+                )
+            }
+        }
+    }
+
+    private suspend fun saveDirectory(uri: Uri? = selectedUri) {
         uri?.let {
             val takeFlags: Int =
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             application.contentResolver.takePersistableUriPermission(it, takeFlags)
         }
 
-        viewModelScope.launch {
-            application.dataStore.saveConfigUri(uri)
-        }
+        application.dataStore.saveConfigUri(uri)
     }
 
-    fun fileLoaded(uri: Uri?) =
-        handleFile(uri)
-
-    fun fileCreated(uri: Uri?) =
-        handleFile(
-            uri, Config(
-                groups = mutableListOf(
-                    Group(
-                        name = application.getString(R.string.group_name_services)
-                    )
+    private fun createData(): Boolean =
+        selectedUri?.asDirectory(application)?.let { dir ->
+            try {
+                dir.createIfNotExists(
+                    mimeType = ConfigDirectory.MIME_DATA,
+                    fileName = ConfigDirectory.FILENAME_DATA,
+                    created = { file ->
+                        viewModelScope.launch {
+                            file.write(application, Config.getDefault(application).toJson())
+                        }
+                    }
                 )
-            )
-        )
-
-    private fun handleFile(uri: Uri?, config: Config? = null) {
-        updateUi {
-            it.copy(showLoading = true)
-        }
-        selectedUri = uri
-        errorMessage.value = null
-
-        viewModelScope.launch {
-            errorMessage.value = uri?.info(application)?.let { fileInfo ->
-                // todo: Verify file contents
-                val success = config?.let {
-                    uri.write(application, it.toJson())
-                } ?: true
-
-                if (success) {
-                    this@IntroActivityViewModel.fileInfo.value = fileInfo
-                    null
-                } else {
-                    R.string.error_file_not_writeable
-                }
-            } ?: R.string.error_file_not_found
-
-            val hasFile = this@IntroActivityViewModel.fileInfo.value != null
-            updateUi {
-                it.copy(
-                    showChooseFile = true,
-                    showConfirmFile = hasFile,
-                    showLoading = false,
-                    showError = !hasFile
-                )
+                true
+            } catch (e1: FileNotFoundException) {
+                errorMessage.value = R.string.error_file_not_found
+                false
+            } catch (e2: FileNotWriteableException) {
+                errorMessage.value = R.string.error_file_not_writeable
+                false
             }
+        } ?: run {
+            errorMessage.value = R.string.error_file_not_found
+            false
         }
-    }
 
     fun hideError() {
         updateUi {
-            it.copy(
-                showError = false
-            )
+            it.hideError()
         }
         errorMessage.value = null
     }
 
     fun hideLoading() {
         updateUi {
-            it.copy(
-                showLoading = false
-            )
+            it.hideLoading()
         }
     }
 
-    fun hideConfirmFile() {
+    fun hideConfirmDirectory() {
         updateUi {
-            it.copy(
-                showConfirmFile = false
-            )
+            it.hideConfirmDirectory()
         }
     }
 

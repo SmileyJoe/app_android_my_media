@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.core.net.toFile
+import androidx.documentfile.provider.DocumentFile
 import io.smileyjoe.media.models.FileInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,6 +51,17 @@ suspend fun Uri.info(context: Context): FileInfo? =
             }
         }
     }
+
+fun Uri.exists(context: Context): Boolean =
+    context.contentResolver.getCursor(this) {
+        return@getCursor it != null
+    } ?: false
+
+fun Uri.asDirectory(context: Context) =
+    DocumentFile.fromTreeUri(context, this)
+
+fun Uri.canWrite() =
+    toFile().canWrite()
 
 private fun <T> ContentResolver.getCursor(uri: Uri, handle: (cursor: Cursor?) -> T?): T? =
     runCatching {

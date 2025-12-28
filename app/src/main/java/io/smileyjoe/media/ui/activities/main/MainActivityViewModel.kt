@@ -1,14 +1,13 @@
 package io.smileyjoe.media.ui.activities.main
 
 import android.app.Application
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import io.smileyjoe.media.R
-import io.smileyjoe.media.db.dataStore
+import io.smileyjoe.media.db.ConfigDirectory
 import io.smileyjoe.media.models.Config
 import io.smileyjoe.media.models.Group
 import io.smileyjoe.media.ui.base.AndroidViewModelUIState
@@ -17,7 +16,6 @@ import io.smileyjoe.media.utils.write
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(application: Application) :
@@ -30,15 +28,19 @@ class MainActivityViewModel(application: Application) :
 
     var errorMessage: MutableState<Int?> = mutableStateOf(null)
 
-    var uri: Uri? = null
+    var configDir: ConfigDirectory? = null
 
     init {
         viewModelScope.launch {
-            uri = application.dataStore.getConfigUri().first()
-            uri?.read(application)?.let {
-                config = Config.fromJson(it)
-                _groups.value = config.groups
-                showLoading(false)
+            ConfigDirectory.get(application)?.let { dir ->
+                configDir = dir
+                configDir?.dataFile?.read(application)?.let {
+                    config = Config.fromJson(it)
+                    updateGroups()
+                    showLoading(false)
+                } ?: run {
+                    showError(true, R.string.error_file_not_found)
+                }
             } ?: run {
                 showError(true, R.string.error_file_not_found)
             }
@@ -52,15 +54,26 @@ class MainActivityViewModel(application: Application) :
 
         viewModelScope.launch {
             config.groups.add(group)
-            val success = uri?.write(application, config.toJson()) ?: false
+            val success = configDir?.dataFile?.write(application, config.toJson()) ?: false
 
             if (success) {
-                _groups.value = _groups.value + group
+                updateGroups()
                 showLoading(false)
             } else {
+                config.groups.remove(group)
                 showError(true, R.string.error_file_not_found)
             }
         }
+    }
+
+    fun updateGroups() {
+        _groups.value = config.groups.toList()
+            .sortedWith(
+                comparator = compareBy(
+                    comparator = String.CASE_INSENSITIVE_ORDER,
+                    selector = { it.name }
+                )
+            )
     }
 
     fun showError(show: Boolean, @StringRes message: Int? = null) {
