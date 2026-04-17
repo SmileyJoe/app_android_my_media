@@ -3,7 +3,6 @@ package io.smileyjoe.media.ui.activities.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.smileyjoe.media.R
 import io.smileyjoe.media.ui.component.dialog.error.DialogError
 import io.smileyjoe.media.ui.component.dialog.group_add.DialogGroupAdd
+import io.smileyjoe.media.ui.component.dialog.item_add.DialogItemAdd
 import io.smileyjoe.media.ui.component.dialog.loading.DialogLoading
 import io.smileyjoe.media.ui.component.fab.FabAddMedia
 import io.smileyjoe.media.ui.component.fab.FabAddMediaOption
@@ -69,6 +70,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun handleEvent(event: MainActivityEvent) {
+        when (event) {
+            is MainActivityEvent.openUrl -> startActivity(event.intent)
+            is MainActivityEvent.openApplication -> startActivity(event.intent)
+        }
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun Screen() {
@@ -78,6 +86,11 @@ class MainActivity : ComponentActivity() {
         val groups by viewModel.groups.collectAsState()
         val errorMessage by viewModel.errorMessage
         val listState = rememberLazyListState()
+
+        LaunchedEffect(Unit) {
+            viewModel.event.collect { handleEvent(it) }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -96,11 +109,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     items(groups) { group ->
                         GroupListItem(
+                            packageManager = packageManager,
                             group = group,
                             modifier = Modifier.fillMaxWidth(),
                             onNewClick = { group ->
-                                // todo: Show new item dialog
-                            }
+                                viewModel.addMediaItemClicked(group)
+                            },
+                            onItemClick = { item -> viewModel.openItem(item) }
                         )
                     }
                 }
@@ -129,6 +144,17 @@ class MainActivity : ComponentActivity() {
                     },
                     onCancel = {
                         viewModel.showDialogGroupAdd(false)
+                    }
+                )
+            }
+
+            if (uiState.showDialogMediaItemAdd) {
+                DialogItemAdd(
+                    onSave = {
+                        viewModel.addMediaItem(viewModel.selectedGroup, it)
+                    },
+                    onCancel = {
+                        viewModel.showDialogMediaItemAdd(false)
                     }
                 )
             }

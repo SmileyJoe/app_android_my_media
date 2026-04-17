@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">My Media</string>
     <string name="title_my_media">Media</string>
+    <string name="text_new">New</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>
@@ -13,6 +14,7 @@
     <string name="fab_add_group">Group</string>
     <string name="hint_group_name">Name</string>
     <string name="title_group_add">Add Group</string>
+    <string name="title_item_add">Add Item</string>
     <string name="instruction_choose_file">So you can own your data, this app saves everything in a JSON file that you choose. This way you can back it up, or do whatever you want with it. \n\nIf you already have a previous file you would like to use, please load it, else, create a new file.</string>
     <string name="error_file_not_found">File not found</string>
     <string name="error_file_not_found_saved">The original config file could not be found, it may have been moved or deleted. \n\nPlease select it again, or create a new one.</string>
@@ -23,4 +25,8 @@
     <string name="group_name_services">Services</string>
     <string name="dialog_message_loading">Loading</string>
     <string name="dialog_message_saving">Saving</string>
+    <string name="media_item_type_app">App</string>
+    <string name="media_item_type_url">Url</string>
+    <string name="hint_url">Url</string>
+    <string name="hint_media_item_title">Title</string>
 </resources>

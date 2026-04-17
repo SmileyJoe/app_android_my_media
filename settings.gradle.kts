@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "My Media"
 include(":app")
- 
+include(":packages")

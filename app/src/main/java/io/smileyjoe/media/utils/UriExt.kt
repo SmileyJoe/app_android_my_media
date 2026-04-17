@@ -2,6 +2,8 @@ package io.smileyjoe.media.utils
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -30,7 +32,7 @@ suspend fun Uri.read(context: Context): String =
 
 suspend fun Uri.write(context: Context, contents: String): Boolean =
     withContext(Dispatchers.IO) {
-        context.contentResolver.openOutputStream(this@write)
+        context.contentResolver.openOutputStream(this@write, "wt")
             ?.bufferedWriter()
             ?.use { out ->
                 out.write(contents)
@@ -79,3 +81,11 @@ private fun <T> ContentResolver.getCursor(uri: Uri, handle: (cursor: Cursor?) ->
             }
         }
     }.getOrNull()
+
+fun Uri.getBrowserIntent(packageManager: PackageManager): Intent? {
+    val intent = Intent(Intent.ACTION_VIEW, this)
+
+    return intent.resolveActivity(packageManager)?.let {
+        intent
+    }
+}
